@@ -1,6 +1,5 @@
 package com.tommywu.springbootmall.controller;
 
-import com.tommywu.springbootmall.dao.ProductDao;
 import com.tommywu.springbootmall.model.Product;
 import com.tommywu.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductController {
-
     @Autowired
     private ProductService productService;
 
