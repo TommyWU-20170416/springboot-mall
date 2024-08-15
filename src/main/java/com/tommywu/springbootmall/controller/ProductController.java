@@ -1,6 +1,7 @@
 package com.tommywu.springbootmall.controller;
 
 import com.tommywu.springbootmall.constant.ProductCategory;
+import com.tommywu.springbootmall.dto.ProductQueryParams;
 import com.tommywu.springbootmall.dto.ProductRequest;
 import com.tommywu.springbootmall.model.Product;
 import com.tommywu.springbootmall.service.ProductService;
@@ -26,8 +27,16 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search) {
-        List<Product> product = productService.getProduct(category, search);
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            @RequestParam(defaultValue = "desc") String sort){
+
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
+        List<Product> product = productService.getProduct(productQueryParams);
 
         // 依照 RESTful，這是因為查詢操作本質上是成功的（沒有發生錯誤），只是結果為空下面的
         // GET 404 表示請求的資源不存在
