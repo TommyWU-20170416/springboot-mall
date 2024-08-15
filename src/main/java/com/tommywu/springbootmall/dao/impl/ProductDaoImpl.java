@@ -1,5 +1,6 @@
 package com.tommywu.springbootmall.dao.impl;
 
+import com.tommywu.springbootmall.constant.ProductCategory;
 import com.tommywu.springbootmall.dao.ProductDao;
 import com.tommywu.springbootmall.dto.ProductRequest;
 import com.tommywu.springbootmall.model.Product;
@@ -19,12 +20,23 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJDBCTemplate;
 
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getProducts(ProductCategory category, String search) {
         String sql =
                 "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
-                        "FROM product";
+                        "FROM product WHERE 1 = 1";
 
-        List<Product> productList = namedParameterJDBCTemplate.query(sql, new ProductRowMapper());
+        Map<String, Object> map = new HashMap<>();
+
+        if(category != null){
+            sql = sql + " AND category = :category";
+            map.put("category", category.name());
+        }
+        if(search != null){
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + search + "%");
+        }
+
+        List<Product> productList = namedParameterJDBCTemplate.query(sql, map, new ProductRowMapper());
         if (productList.size() > 0)
             return productList;
         else
