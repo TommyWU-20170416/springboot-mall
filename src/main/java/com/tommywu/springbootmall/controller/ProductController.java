@@ -35,8 +35,7 @@ public class ProductController {
     }
 
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,
-                                                 @RequestBody @Valid ProductRequest productRequest) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId, @RequestBody @Valid ProductRequest productRequest) {
         Product product = productService.getProductById(productId);
         if (product == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -47,6 +46,16 @@ public class ProductController {
         product = productService.getProductById(productId);
 
         return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
 
+    /**
+     * 為什麼刪除商品不用再查詢檢查再不再
+     * 是因為前端只要可以刪除就好，不用返回查不到(可以跟前端討論)
+     */
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<Product> deleteProduct(@PathVariable Integer productId){
+        productService.deleteProductById(productId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
