@@ -19,6 +19,19 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJDBCTemplate;
 
     @Override
+    public List<Product> getProducts() {
+        String sql =
+                "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date " +
+                        "FROM product";
+
+        List<Product> productList = namedParameterJDBCTemplate.query(sql, new ProductRowMapper());
+        if (productList.size() > 0)
+            return productList;
+        else
+            return null;
+    }
+
+    @Override
     public Product getProductById(Integer productId) {
         String sql =
                 "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date " +

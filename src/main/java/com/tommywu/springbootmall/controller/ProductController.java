@@ -9,11 +9,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    /**
+     * 查詢商品清單
+     * - 查詢條件
+     * - 排序
+     * - 分頁
+     */
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts() {
+        List<Product> product = productService.getProduct();
+
+        /**
+         * 依照 RESTful，這是因為查詢操作本質上是成功的（沒有發生錯誤），只是結果為空
+         * 下面的 GET 404 表示請求的資源不存在
+         */
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
 
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
@@ -53,9 +71,11 @@ public class ProductController {
      * 是因為前端只要可以刪除就好，不用返回查不到(可以跟前端討論)
      */
     @DeleteMapping("/products/{productId}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable Integer productId){
+    public ResponseEntity<Product> deleteProduct(@PathVariable Integer productId) {
         productService.deleteProductById(productId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 }
