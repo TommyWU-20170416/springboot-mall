@@ -5,6 +5,7 @@ import com.tommywu.springbootmall.dto.ProductQueryParams;
 import com.tommywu.springbootmall.dto.ProductRequest;
 import com.tommywu.springbootmall.model.Product;
 import com.tommywu.springbootmall.service.ProductService;
+import com.tommywu.springbootmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class ProductController {
      * - 分頁
      */
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "created_date") String orderBy,
@@ -37,6 +38,7 @@ public class ProductController {
             @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
             @RequestParam(defaultValue = "0") @Min(0) Integer offset){
 
+        // 整理 查詢條件
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
@@ -47,9 +49,18 @@ public class ProductController {
 
         List<Product> product = productService.getProduct(productQueryParams);
 
+        Integer total = productService.countProduct(productQueryParams);
         // 依照 RESTful，這是因為查詢操作本質上是成功的（沒有發生錯誤），只是結果為空下面的
         // GET 404 表示請求的資源不存在
-        return ResponseEntity.status(HttpStatus.OK).body(product);
+
+        // form Page
+        Page<Product> page = new Page();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResults(product);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     @GetMapping("/products/{productId}")
